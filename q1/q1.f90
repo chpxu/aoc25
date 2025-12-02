@@ -8,11 +8,12 @@ character(len=4) :: rot, line, step_size_str
 character :: direction
 integer :: pointer_loc, num_zero, step_size, dis
 
-open(newunit=io, file="input.txt", status="old", action="read")
+open(newunit=io, file="input_test.txt", status="old", action="read")
 
 pointer_loc = 50 ! dial range is [0,99]
 num_zero = 0
-num_lines = 4510
+! num_lines = 4510
+num_lines = 10
 do i = 1, num_lines
     read(io, *, iostat=error) rot
     ! print *, rot
@@ -35,20 +36,22 @@ do i = 1, num_lines
     end if
     if (direction == "L") then
         if (pointer_loc < step_size) then ! e.g. pointer_loc = 69, rot =  L70
+            if (step_size - pointer_loc .eq. 0) num_zero = num_zero + 1
             pointer_loc = 100 - (step_size - pointer_loc)
-            if (pointer_loc == 0) num_zero = num_zero + 1
         else
             pointer_loc = pointer_loc - step_size ! e.g. 69 + L30 = 39
         end if
+        continue
     end if
     dis = pointer_loc + step_size - 100
     if (direction == "R") then
         if (step_size + pointer_loc > 99) then ! e.g. 50 + R746 = 96
+            if ((pointer_loc .eq. 0) .and. (dis .eq. 0))  num_zero = num_zero + 1
             pointer_loc = dis
-            if ((pointer_loc .eq. 0))  num_zero = num_zero + 1
         else
             pointer_loc = pointer_loc + step_size !e.g. 50 + R30 = 80
         end if
+        continue
     end if
     if (pointer_loc == 0) then 
         num_zero = num_zero  +1 ! case where it's just 0 anyways
